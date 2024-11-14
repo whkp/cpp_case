@@ -1,0 +1,14 @@
+[2024-11-14 20:05:58]  [INFO]: This is an info message
+[2024-11-14 20:05:58]  [WARNING]: This is a warning message
+[2024-11-14 20:12:50]  [INFO]: This is an info message
+[2024-11-14 20:12:50]  [WARNING]: This is a warning message
+[2024-11-14 20:59:40]  [INFO]: This is an info message
+[2024-11-14 20:59:40]  [WARNING]: This is a warning message
+[2024-11-14 21:00:28]  [INFO]: This is an info message
+[2024-11-14 21:00:28]  [WARNING]: This is a warning message
+[2024-11-14 21:07:44]  [INFO]: This is an info message
+[2024-11-14 21:07:44]  [WARNING]: This is a warning message
+[2024-11-14 21:08:06]  [INFO]: This is an info message
+[2024-11-14 21:08:06]  [WARNING]: This is a warning message
+[2024-11-14 21:08:32]  [INFO]: This is an info message
+[2024-11-14 21:08:32]  [WARNING]: This is a warning message
