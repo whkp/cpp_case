@@ -3,12 +3,13 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 //错误处理函数
 void errif(bool condition, const char *errmsg) {
     if(condition) {
         perror(errmsg);
-        exit(EXIT_FAILURE)
+        exit(EXIT_FAILURE);
     }
 }
 

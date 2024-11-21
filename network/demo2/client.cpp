@@ -1,6 +1,15 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <iostream>
+#include <unistd.h>
+
+void errif(bool condition, const char *errmsg) {
+    if(condition) {
+        perror(errmsg);
+        exit(EXIT_FAILURE);
+    }
+}
 
 int main() {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -14,9 +23,9 @@ int main() {
 
     //bind(sockfd, (sockaddr*)&serv_addr, sizeof(serv_addr)); 客户端不进行bind操作
 
-    connect(sockfd, (sockaddr*)&serv_addr, sizeof(serv_addr));    
+    errif(connect(sockfd, (sockaddr*)&serv_addr, sizeof(serv_addr)), "connect error");    
     
-    while (1) {
+    while (true) {
         char buf[1024];
         bzero(&buf, sizeof(buf));
         scanf("%s", buf); //从标准输入读取数据
@@ -38,5 +47,6 @@ int main() {
             printf("message from server: %s\n", buf); //将读取的数据输出到标准输出
         }
     }
+    close(sockfd);
     return 0;
 }

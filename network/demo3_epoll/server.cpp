@@ -11,6 +11,10 @@
 #define MAX_EVENTS 1024
 #define READ_BUFFER 1024
 
+void setnonblocking(int sockfd) {
+    fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL) | O_NONBLOCK);
+}
+
 int main() {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     errif(sockfd == -1, "socket create error");
@@ -30,14 +34,14 @@ int main() {
 
     struct epoll_event events[MAX_EVENTS],ev;
     bzero(&ev, sizeof(ev));
-    bzro(&events, sizeof(events));
-    ev.events = EPOLLIN | EPOLLET;
-    ev.data.fd = sockfd;
+    bzero(&events, sizeof(events));
+    ev.events = EPOLLIN; //代码中使用ET模式
+    ev.data.fd = sockfd; //IO口为服务器套接字
     setnonblocking(sockfd);
     epoll_ctl(epfd, EPOLL_CTL_ADD, sockfd, &ev); //添加事件到epoll实例
-
-    while (1) {
-        int nfds = epoll_wait(epfd, events, MAX_EVENTS, -1);
+    //不断监听epoll上事件并处理
+    while (true) {
+        int nfds = epoll_wait(epfd, events, MAX_EVENTS, -1); //有nfds个事件发生
         errif(nfds == -1, "epoll wait error");
         for(int i = 0; i < nfds; i++) {
             if(events[i].data.fd == sockfd) { //有新的连接
@@ -55,12 +59,12 @@ int main() {
                 setnonblocking(clnt_sockfd);
                 epoll_ctl(epfd, EPOLL_CTL_ADD, clnt_sockfd, &ev); //添加事件到epoll实例
             } else if(events[i].events & EPOLLIN) { //可读事件
-                char buf[RREAD_BUFFER];
-                while(true) {
+                char buf[READ_BUFFER];
+                while(true) {  //使用非阻塞IO，需要循环读，一次读取buf大小数据，直到读完所有数据
                     bzero(&buf, sizeof(buf));
                     ssize_t read_bytes = read(events[i].data.fd, buf, sizeof(buf));
 
-                    if(read_bytes == -1 && errno == EINTR) {
+                    if(read_bytes == -1 && errno == EINTR) { //客户端正常正常中断，继续读
                         printf("read error\n");
                         continue;
                     }
@@ -68,9 +72,9 @@ int main() {
                         printf("read all data\n");
                         break;
                     }
-                    else if(read_bytes == 0) {
-                        close(events[i].data.fd);
+                    else if(read_bytes == 0) { //EOF，客户端关闭连接
                         printf("client %d closed\n", events[i].data.fd);
+                        close(events[i].data.fd);//关闭socket,自动将其从epoll实例中移除
                         break;
                     }
                     else {
@@ -82,10 +86,10 @@ int main() {
                 }
     } else {
         printf("other event\n");
-    }
         }
+    }
     close(sockfd);
     return 0;
 
-
+    }
 }
