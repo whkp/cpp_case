@@ -110,3 +110,92 @@
 
 
 
+## 链表
+
+链表由若干个节点组成，每个节点包含数据和指向下一个元素的指针，常见定义：
+
+```c++
+#include <bits/stdc++.h>
+
+using namespace std;
+
+//定义一个结点模板
+template<typename T>
+struct Node {
+	T data;
+	Node *next;
+	Node() : next(nullptr) {}
+	Node(const T &d) : data(d), next(nullptr) {}
+};
+```
+
+### 常见问题总结
+
+链表通常无法高效获取长度、无法根据偏移快速访问元素是两大劣势。
+
+常见问题如获取**倒数第K个元素、获取中间位置的元素、判断链表是否存在环、判断环的长度**等和**长度与位置**有关的问题，都可以通过使用双指针来解决。
+
+判断是否存在环：
+
+```c++
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        //使用快慢指针，有环快指针一定会再次和慢指针相遇
+        ListNode* fast = head, *low = head;
+        while(fast && fast->next) {
+            //对节点指针调用next方法时要确保不为空指针
+            fast = fast -> next;
+            fast = fast -> next;
+            low = low -> next;
+            if(low == fast) {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+```
+
+**双指针确定倒数第n个节点**
+
+<img src="pic/19.png" alt="image-20250114210619571" style="zoom:80%;" />
+
+这题本质上想考察的是，在不知道链表长度的前提下，设计一个算法，在「到达链表末尾的瞬间」就能知道倒数第 *n* 个节点。
+
+**注意：头部额外引入一个节点，同时节点移动到目标节点前一个，方便将目标节点删掉**
+
+```c++
+class Solution {
+public:
+    //核心在如何找到倒数的第n个节点
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        //构造两个指针，一个先走n步，然后再两个一起走，
+        //先走n步的指针到末尾时，另一个指针就到了倒数第n个节点的位置
+        ListNode* res = new ListNode(0);
+        res -> next = head;
+        //左右节点的下一个节点是head
+        ListNode* left = res, *right = res;
+        //右节点首先移动n次,从head节点往后移动n-1次
+        while(n--) {
+            right = right -> next;
+        }
+
+        //左右节点一起移动，结束条件为右节点下一个节点为空（左节点停在倒数第n个节点前一个）
+        while(right -> next) {
+            left = left -> next;
+            right = right -> next;
+        }
+        left -> next = left -> next -> next;
+        return res -> next;
+    }
+```
+
