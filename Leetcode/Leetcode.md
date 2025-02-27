@@ -42,7 +42,7 @@
 
 ### 35 [搜索插入位置](https://leetcode.cn/problems/search-insert-position/)
 
-<img src="\pic\35.png" alt="35" style="zoom:50%;" />
+<img src="pic\35.png" alt="35" style="zoom:50%;" />
 
 题目让找到**第一个大于等于target值的**下标，如果所有树都小于target，返回数组长度。
 
