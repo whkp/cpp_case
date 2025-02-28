@@ -1,11 +1,12 @@
 #pragma once
 #include <functional>
+#include <memory>
 
 class Epoll;
 class Channel;
 class Eventloop {
 private:
-    std::make_unique<Epoll> epoll_;
+    std::unique_ptr<Epoll> epoll_;
     bool quit_{false};
 public:
     Eventloop();

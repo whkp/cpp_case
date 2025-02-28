@@ -4,8 +4,9 @@
 #include <utility>
 #include "Channel.h"
 #include "Socket.h"
+#include "Buffer.h"
 
-Acceptor::Acceptor(EventLoop *loop) {
+Acceptor::Acceptor(Eventloop *loop) {
     //创建socket对象来监听连接
     socket_ = std::make_unique<Socket>();
     InetAddress *addr = new InetAddress("127.0.0.1", 1234);
@@ -21,7 +22,7 @@ Acceptor::Acceptor(EventLoop *loop) {
 
 Acceptor::~Acceptor() {}
 
-void Acceptor::setNewConnectionCallback(std::function<void(Socket *)> callback) {
+void Acceptor::setNewConnectionCallback(std::function<void(int)> callback) {
     newConnectionCallback_ = callback;
 }
 
@@ -33,7 +34,7 @@ void Acceptor::AcceptConnection() {
     clnt_socket->setNonBlocking();
     //如果设置了新连接回调函数，则调用
     if(newConnectionCallback_) {
-        newConnectionCallback_(clnt_socket);
+        newConnectionCallback_(clnt_socket->getFd());
     }
     delete clnt_addr;
 }

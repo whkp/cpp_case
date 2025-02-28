@@ -1,6 +1,12 @@
 #include "Channel.h"
+#include <unistd.h>
+#include <utility>
+#include "Eventloop.h"
+#include "Socket.h"
+#include "Epoll.h"
 
-Channel::Channel(EventLoop* loop, int fd)
+
+Channel::Channel(Eventloop* loop, int fd)
     : loop_(loop),
       fd_(fd),
       listenEvents_(0),
@@ -39,23 +45,23 @@ void Channel::UseET() {
     loop_->updateChannel(this);
 }
 
-int getFd() const {
+int Channel::getFd() const {
     return fd_;
 }
 
-uint32_t getListenEvents() const {
+uint32_t Channel::getListenEvents() const {
     return listenEvents_;
 }
 
-uint32_t getReadyEvents() const {
+uint32_t Channel::getReadyEvents() const {
     return readyEvents_;
 }
 
-bool getInEpoll() const {
+bool Channel::getInEpoll() const {
     return inEpoll_;
 }
 
-void setInEpoll(bool inEpoll) {
+void Channel::setInEpoll(bool inEpoll) {
     inEpoll_ = inEpoll;
 }
 

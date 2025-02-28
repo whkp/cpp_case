@@ -10,7 +10,7 @@
 #include "Socket.h"
 #include "util.h"
 
-Connection::Connection(EventLoop *loop, int fd) {
+Connection::Connection(Eventloop *loop, int fd) {
     sock_ = std::make_unique<Socket>(fd);
     if(loop_ != nullptr) {
         //如果loop不为空，创建channel对象并进行监听
@@ -33,11 +33,11 @@ void Connection::Read() {
         return;
     }
     //根据是否阻塞选择对应的处理函数
-    readBuffer_->clear();
-    if(sock_->isNonblocking) {
-        return readNonBlocking();
+    readBuffer_->Clear();
+    if(sock_->isNonBlocking()) {
+        readNonBlocking();
     } else {
-        return readBlocking();
+        readBlocking();
     }
 }
 
@@ -46,12 +46,12 @@ void Connection::Write() {
         perror("Connection is not connected, can not write!");
         return;
     }
-    if(sock_->isNonblocking) {
-        return writeNonBlocking();
+    if(sock_->isNonBlocking()) {
+        writeNonBlocking();
     } else {
-        return writeBlocking();
+        writeBlocking();
     }
-    sendBuffer_->clear();
+    sendBuffer_->Clear();
     
 }
 
@@ -89,8 +89,9 @@ void Connection::readNonBlocking() {
 
 void Connection::writeNonBlocking() {
     int sockfd = sock_->getFd();
-    char* data = sendBuffer_->to_str();
-    int data_size = sendBuffer_->size();
+    char buf[sendBuffer_->Size()];
+    memcpy(buf, sendBuffer_->to_str(), sendBuffer_->Size());
+    int data_size = sendBuffer_->Size();
     int data_written = data_size;
     //循环发送数据，直到数据发送完毕
     while(data_written > 0) {
@@ -150,10 +151,10 @@ void Connection::setOnConnectionCallback(std::function<void(Connection *)> const
 }
 
 void Connection::Close() {
-    delete_connection_callback_(sock_.getFd());
+    delete_connection_callback_(sock_->getFd());
 }
 
-State Connection::getState() const {
+Connection::State Connection::getState() const {
     return state_;
 }
 

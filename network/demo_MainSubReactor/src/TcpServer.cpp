@@ -10,7 +10,7 @@ TcpServer::TcpServer() {
     threadpool_ = std::make_unique<Threadpool>(size);
     for(size_t i = 0; i < size; ++i) {
         std::unique_ptr<Eventloop> sub = std::make_unique<Eventloop>();
-        sub_reactors_.push_back(std::move(sub))
+        sub_reactors_.push_back(std::move(sub));
     }
 }
 

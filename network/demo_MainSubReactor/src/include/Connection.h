@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <memory>
 
 class Eventloop;
 class Socket;
@@ -22,14 +23,14 @@ private:
     std::unique_ptr<Buffer> readBuffer_;
     std::unique_ptr<Buffer> sendBuffer_;
     Eventloop* loop_;
-    std::functional<void(int)> delete_connection_callback_;
-    std::functional<void(Connection*)> on_connection_callback_;
+    std::function<void(int)> delete_connection_callback_;
+    std::function<void(Connection*)> on_connection_callback_;
 
     State state_;
 
     //针对非阻塞和阻塞的读写函数
     void readNonBlocking();
-    void writeNoneBlocking();
+    void writeNonBlocking();
     void readBlocking();
     void writeBlocking();
 
@@ -41,16 +42,16 @@ public:
     void Write();
     void Send(std::string str);
 
-    void setDeleteConnectionCallback(std::functional<void(int)> const &callback);
-    void setOnConnectionCallback(std::functional<void(Connection*)> const &callback);
+    void setDeleteConnectionCallback(std::function<void(int)> const &callback);
+    void setOnConnectionCallback(std::function<void(Connection*)> const &callback);
     State getState() const;
     void Close();
     void setSendBuffer(const char* str);
-    Buffer *getReadBuffer();
-    Buffer *getSendBuffer();
+    Buffer *getReadBuffer() const;
+    Buffer *getSendBuffer() const;
     const char* SendBufferToStr();
     const char* ReadBufferToStr();
-    Socket* getSocket();
+    Socket* getSocket() const;
 
     void onConnection(std::function<void()> fn);
 };

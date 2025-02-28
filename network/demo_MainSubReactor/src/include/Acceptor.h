@@ -2,17 +2,20 @@
 #include <memory>
 #include <functional>
 
+class Socket;
+class Eventloop;
+class Channel;
 class Acceptor {
 private:
-    std::unique<Socket> socket_;
-    std::unique<Channel> channel_;
-    std::function<void(Socket*)> newConnectionCallback_;
+    std::unique_ptr<Socket> socket_;
+    std::unique_ptr<Channel> channel_;
+    std::function<void(int)> newConnectionCallback_;
 
 public:
-    explict Acceptor(EventLoop* loop);
+    explicit Acceptor(Eventloop* loop);
     ~Acceptor();
 
-    void setNewConnectionCallback(std::function<void(Socket*)> callback);
+    void setNewConnectionCallback(std::function<void(int)> callback);
     void AcceptConnection();
     
 };

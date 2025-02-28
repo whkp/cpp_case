@@ -31,4 +31,4 @@ public:
 
     void OnConnection(std::function<void(Connection*)> const &cb);
     void OnRecv(std::function<void(Connection*)> const &cb);
-}
+};

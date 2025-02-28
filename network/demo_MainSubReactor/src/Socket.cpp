@@ -1,6 +1,7 @@
 #include "Socket.h"
 #include "util.h"
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <string.h>
 #include <stdio.h>
@@ -54,7 +55,8 @@ Socket::~Socket() {
 }
 
 void Socket::Bind(InetAddress* addr) {
-    int ret = ::bind(fd_, (struct sockaddr*)&(addr->getInetAddr()), sizeof(addr->getInetAddr()));
+    struct sockaddr_in serverAddr = addr ->getInetAddr();
+    int ret = ::bind(fd_, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
     ErrorIf(ret == -1, "socket bind error");
 }
 
@@ -90,10 +92,10 @@ void Socket::setNonBlocking() {
     int ret = fcntl(fd_, F_SETFL, flags | O_NONBLOCK);
     ErrorIf(ret == -1, "socket set nonblocking error");
 }
-bool Socket::isNonBlocking() {
+bool Socket::isNonBlocking() const{
     return (fcntl(fd_, F_GETFL, 0) & O_NONBLOCK) != 0;
 }
-int Socket::getFd() {
+int Socket::getFd() const{
     return fd_;
 }
 

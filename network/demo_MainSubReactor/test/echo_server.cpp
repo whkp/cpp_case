@@ -1,8 +1,15 @@
 #include <iostream>
+#include <unistd.h>
 #include "pine.h"
 
 int main(int argc, char* argv[]) {
     TcpServer* server = new TcpServer();
+
+    Signal::signal(SIGINT, [&] {
+        delete server;
+        std::cout << "Server exit" << std::endl;
+        exit(0);
+    });
     server->OnConnection([](Connection* conn) {
         std::cout << "New connection, fd: " << conn->getSocket()->getFd() << std::endl;
     });

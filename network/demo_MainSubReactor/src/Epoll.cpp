@@ -1,4 +1,4 @@
-#include "epoll.h"
+#include "Epoll.h"
 #include <unistd.h>
 #include <cstring>
 #include "Channel.h"
@@ -10,7 +10,7 @@ Epoll::Epoll() {
     epfd_ =  epoll_create1(0);
     ErrorIf(epfd_ == -1, "epoll_create1 error");
     events_ = new epoll_event[MAX_EVENTS];
-    memset(events_, 0, sizeof(*epoll_event) * MAX_EVENTS);
+    memset(events_, 0, sizeof(*events_) * MAX_EVENTS);
 }
 
 Epoll::~Epoll() {
@@ -21,7 +21,7 @@ Epoll::~Epoll() {
     delete[] events_;
 }
 
-std::vector<Channel*> Epoll::poll(int timeout) {
+std::vector<Channel*> Epoll::Poll(int timeout) {
     std::vector<Channel*> activeChannels;
     //等待事件发生,返回活跃的文件描述符数量
     int nfds = epoll_wait(epfd_, events_, MAX_EVENTS, timeout);
@@ -35,8 +35,8 @@ std::vector<Channel*> Epoll::poll(int timeout) {
     return activeChannels;
 }
 
-void Epoll::updateChannel(Channel* channel) {
-    int epfd_ = channel->getFd();
+void Epoll::UpdateChannel(Channel* channel) {
+    int fd = channel->getFd();
     struct epoll_event ev{};
     ev.data.ptr = channel;
     ev.events = channel->getListenEvents();
@@ -49,7 +49,7 @@ void Epoll::updateChannel(Channel* channel) {
     }
 }
 
-void Epoll::removeChannel(Channel* channel) {
+void Epoll::RemoveChannel(Channel* channel) {
     int fd = channel->getFd();
     ErrorIf(epoll_ctl(fd, EPOLL_CTL_DEL, fd, nullptr) == -1, "epoll_ctl del error");
     channel->setInEpoll(false);

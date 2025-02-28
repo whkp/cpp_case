@@ -6,6 +6,7 @@
 #include <condition_variable>
 #include <functional>
 #include <vector>
+#include <future>
 
 
 //池式结构解决缓存问题，起到缓冲区作用
@@ -30,7 +31,7 @@ public:
     ~Threadpool(); //析构函数
     //F为函数类型，Args为参数类型，返回类型为std::future，用于获取任务执行结果
     template<class F, class... Args>
-    auto addTask(F &&f, Args &&... args) -> std::future<typename std::result_of<F(Args...)>::type; //添加任务
+    auto addTask(F &&f, Args &&... args) -> std::future<typename std::result_of<F(Args...)>::type>; //添加任务
 };
 
 
@@ -67,7 +68,7 @@ Threadpool::Threadpool(unsigned int size) : maxSize(size), freeSize(size), busyS
                         return;
                     } 
                     //从任务队列取出任务
-                    tast = tasks.front();
+                    task = tasks.front();
                     tasks.pop();
                 }
                 task(); //执行任务

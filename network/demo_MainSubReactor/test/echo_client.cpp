@@ -18,7 +18,7 @@ void OneClient(int msgs, int wait) {
             break;
         }
         conn->Read();
-        std::cout << "msg count" << count++ << conn->getReadBuffer()->to_str() << std::endl;
+        std::cout << "msg count" << count++ << conn->getReadBuffer() -> to_str() << std::endl;
     }
     delete conn;
     delete sock;
@@ -31,13 +31,13 @@ int main(int argc, char* argv[]) {
     OneClient(10000, 0);
     return 0;
     */
-    int threads = 100;
-    int msgs = 100;
+    int threads = 10;
+    int msgs = 10000;
     int wait = 0;
-    ThreadPool *pool = new ThreadPool(threads);
+    Threadpool *pool = new Threadpool(threads);
     std::function<void()> func = std::bind(OneClient, msgs, wait);
     for(int i = 0; i < threads; i++) {
-        pool->AddTask(func);
+        pool->addTask(func);
     }
     delete pool;
     return 0;

@@ -2,10 +2,10 @@
 #include <functional>
 
 class Socket;
-class EventLoop;
+class Eventloop;
 class Channel {
 private:
-    EventLoop* loop_;
+    Eventloop* loop_;
     int fd_;
     uint32_t listenEvents_;  //监听事件
     uint32_t readyEvents_; //已经准备好的事件
@@ -14,7 +14,7 @@ private:
     std::function<void()> writeCallback_;; //写回调函数
 
 public:
-    Channel(EventLoop* loop, int fd);
+    Channel(Eventloop* loop, int fd);
     ~Channel();
     void handleEvent();
     void enableReading();

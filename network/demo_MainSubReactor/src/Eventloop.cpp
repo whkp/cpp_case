@@ -7,14 +7,12 @@ Eventloop::Eventloop() {
     epoll_ = std::make_unique<Epoll>();
 }
 
-Eventloop::~Eventloop() {
-    delete epoll_;
-}
+Eventloop::~Eventloop() {}
 
 void Eventloop::loop() {
-    while(!quit) {
+    while(!quit_) {
         std::vector<Channel*> activeChannels;
-        activeChannels = epoll_->poll();
+        activeChannels = epoll_->Poll();
         for(auto &channel : activeChannels) {
             //处理每个活跃的文件描述符
             channel->handleEvent();
@@ -23,5 +21,5 @@ void Eventloop::loop() {
 }
 
 void Eventloop::updateChannel(Channel* channel) {
-    epoll_->updateChannel(channel);
+    epoll_->UpdateChannel(channel);
 }

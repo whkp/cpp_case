@@ -89,7 +89,7 @@ channel类中的事件循环loop_成员变量为普通指针，channel实例所�
 ```cpp
 class Channel {
 private:
-    EventLoop* loop_;
+    Eventloop* loop_;
     int fd_;
     uint32_t listenEvents_;  //监听事件
     uint32_t readyEvents_; //已经准备好的事件
