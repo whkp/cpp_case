@@ -25,6 +25,7 @@ void TcpServer::Start() {
 }
 
 void TcpServer::NewConnection(int fd) {
+    ErrorIf(fd == -1, "NewConnection error");
     uint64_t randow = fd % sub_reactors_.size(); // 随机选择一个子Reactor
     std::unique_ptr<Connection> conn = std::make_unique<Connection>(sub_reactors_[randow].get(), fd);
     std::function<void(int)> cb = std::bind(&TcpServer::DeleteConnection, this, std::placeholders::_1);
@@ -32,9 +33,6 @@ void TcpServer::NewConnection(int fd) {
     conn->setDeleteConnectionCallback(cb);
     conn->setOnConnectionCallback(on_connect_);
     connections_[fd] = std::move(conn);
-    if(on_connect_) {
-        on_connect_(connections_[fd].get());
-    }
 }
 
 void TcpServer::DeleteConnection(int fd) {
@@ -47,8 +45,4 @@ void TcpServer::DeleteConnection(int fd) {
 
 void TcpServer::OnConnection(std::function<void(Connection*)> const &cb) {
     on_connect_ = std::move(cb);
-}
-
-void TcpServer::OnRecv(std::function<void(Connection*)> const &cb) {
-    on_recv_ = std::move(cb);
 }

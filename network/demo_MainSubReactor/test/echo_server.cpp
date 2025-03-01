@@ -11,11 +11,16 @@ int main(int argc, char* argv[]) {
         exit(0);
     });
     server->OnConnection([](Connection* conn) {
+        //建立连接后先接受客户端的数据，然后回显
         std::cout << "New connection, fd: " << conn->getSocket()->getFd() << std::endl;
-    });
-    server->OnRecv([](Connection* conn) {
-        std::cout << "Message from client: " << conn->getSocket()->getFd() << std::endl;
-        conn->Send(conn->getReadBuffer()->to_str());
+        conn -> Read(); // read data
+        if(conn->getState() == Connection::State::Closed) {
+            conn->Close();
+            return;
+        }
+        std::cout << "message from client: " << conn->ReadBufferToStr() << std::endl;
+        conn->setSendBuffer(conn -> ReadBufferToStr());
+        conn->Write();
     });
     server->Start();
     delete server;

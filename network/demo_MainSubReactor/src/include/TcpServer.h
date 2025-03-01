@@ -6,6 +6,7 @@
 #include "Acceptor.h"
 #include "Connection.h"
 #include "Threadpool.h"
+#include "util.h"
 
 class TcpServer {
 private:
@@ -19,8 +20,6 @@ private:
 
     //自定义业务逻辑，连接后进行怎么样的处理
     std::function<void(Connection*)> on_connect_;
-    //接收数据后进行怎么样的处理
-    std::function<void(Connection*)> on_recv_;
 public:
     TcpServer();
     ~TcpServer();
@@ -30,5 +29,4 @@ public:
     void DeleteConnection(int fd);
 
     void OnConnection(std::function<void(Connection*)> const &cb);
-    void OnRecv(std::function<void(Connection*)> const &cb);
 };

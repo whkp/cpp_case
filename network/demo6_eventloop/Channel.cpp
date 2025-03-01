@@ -13,7 +13,7 @@ void Channel::handleEvent() {
     callback();
 }
 void Channel::enableReading() {
-    events |= EPOLLIN;
+    events |= EPOLLIN | EPOLLPRI;
     loop->updateChannel(this);
 }
 

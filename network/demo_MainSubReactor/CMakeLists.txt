@@ -10,6 +10,8 @@ add_subdirectory(src)
 
 add_executable(echo_server test/echo_server.cpp)
 add_executable(echo_client test/echo_client.cpp)
+add_executable(single_client test/single_client.cpp)
 
-target_link_libraries(echo_server network )
-target_link_libraries(echo_client network pthread)
+target_link_libraries(echo_server network ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(echo_client network ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(single_client network)

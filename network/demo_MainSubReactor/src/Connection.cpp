@@ -12,6 +12,7 @@
 
 Connection::Connection(Eventloop *loop, int fd) {
     sock_ = std::make_unique<Socket>(fd);
+    //客户端loop设置为空，不需要创建channel
     if(loop_ != nullptr) {
         //如果loop不为空，创建channel对象并进行监听
         channel_ = std::make_unique<Channel>(loop_, fd);
@@ -69,7 +70,6 @@ void Connection::readNonBlocking() {
             //对方关闭连接
             printf("read EOF, client fd %d disconnected\n", sockfd);
             state_ = State::Closed;
-            Close();
             break;
         } else if(n == -1 && errno == EINTR) {
             //程序正常中断，继续读取
@@ -81,7 +81,6 @@ void Connection::readNonBlocking() {
             //其他错误
             printf("Other error on client fd %d\n", sockfd);
             state_ = State::Closed;
-            Close();
             break;
         }
     }
@@ -147,7 +146,11 @@ void Connection::setDeleteConnectionCallback(std::function<void(int)> const &cal
 }
 
 void Connection::setOnConnectionCallback(std::function<void(Connection *)> const &callback) {
+    //设置连接回调函数,并对channel的读回调函数进行设置
     on_connection_callback_ = callback;
+    channel_->setReadCallback([this] {
+        on_connection_callback_(this);
+    });
 }
 
 void Connection::Close() {
@@ -171,6 +174,14 @@ Buffer *Connection::getReadBuffer() const {
 
 Buffer *Connection::getSendBuffer() const {
     return sendBuffer_.get();
+}
+
+const char* Connection::ReadBufferToStr() {
+    return readBuffer_->to_str();
+}
+
+const char* Connection::SendBufferToStr() {
+    return sendBuffer_->to_str();
 }
 
 void Connection::Send(std::string std) {

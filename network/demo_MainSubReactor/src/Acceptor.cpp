@@ -11,13 +11,14 @@ Acceptor::Acceptor(Eventloop *loop) {
     socket_ = std::make_unique<Socket>();
     InetAddress *addr = new InetAddress("127.0.0.1", 1234);
     socket_->Bind(addr);
-    socket_->setNonBlocking(); //使用阻塞IO较好
+    //socket_->setNonBlocking(); //使用阻塞IO较好
     socket_->Listen();
 
     //创建channel对象来监听socket对象的fd,并设置读回调函数
     channel_ = std::make_unique<Channel>(loop, socket_->getFd());
     channel_->setReadCallback(std::bind(&Acceptor::AcceptConnection, this));
     channel_->enableReading();
+    delete addr;
 }
 
 Acceptor::~Acceptor() {}
